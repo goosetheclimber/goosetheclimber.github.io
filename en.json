@@ -3,11 +3,11 @@
   "nav_leaderboard": "Leaderboard",
   "nav_members": "Members",
   "nav_join": "How to Join",
-  "home_title": "University Climbing Club",
+  "home_title": "KAIST Goose The Climber",
   "home_subtitle": "Join us on our journey to the top!",
   "home_cta": "Learn More",
   "leaderboard_title": "Club Leaderboard",
-  "leaderboard_subtitle": "See member activity and achievements.",
+  "leaderboard_subtitle": "Feature under construction",
   "leaderboard_header_rank": "Rank",
   "leaderboard_header_name": "Name",
   "leaderboard_header_attendance": "Attendance",
@@ -19,5 +19,5 @@
   "leaderboard_actions_title": "Log Your Activity",
   "leaderboard_attend_button": "Attend Session",
   "leaderboard_achieve_button": "Add Achievement (+10 pts)",
-  "footer_text": "© 2025 University Climbing Club. All rights reserved."
+  "footer_text": "© 2025 KAIST Goose The Climber. All rights reserved."
 }
