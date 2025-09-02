@@ -1,0 +1,23 @@
+{
+  "nav_home": "홈",
+  "nav_leaderboard": "리더보드",
+  "nav_members": "멤버",
+  "nav_join": "가입 방법",
+  "home_title": "대학 클라이밍 클럽",
+  "home_subtitle": "정상을 향한 우리의 여정에 동참하세요!",
+  "home_cta": "더 알아보기",
+  "leaderboard_title": "클럽 리더보드",
+  "leaderboard_subtitle": "멤버들의 활동 및 성과를 확인하세요.",
+  "leaderboard_header_rank": "순위",
+  "leaderboard_header_name": "이름",
+  "leaderboard_header_attendance": "출석",
+  "leaderboard_header_achievements": "성과",
+  "leaderboard_header_last_updated": "최근 업데이트",
+  "leaderboard_login_prompt": "리더보드에 참여하려면 이름을 입력하세요:",
+  "leaderboard_login_button": "이름 설정",
+  "leaderboard_welcome_message": "님, 환영합니다!",
+  "leaderboard_actions_title": "활동 기록",
+  "leaderboard_attend_button": "출석하기",
+  "leaderboard_achieve_button": "성과 추가 (+10점)",
+  "footer_text": "© 2025 대학 클라이밍 클럽. 모든 권리 보유."
+}
