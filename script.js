@@ -1,6 +1,6 @@
 // --- CONFIGURATION ---
 // PASTE YOUR GOOGLE APPS SCRIPT URL HERE
-const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; 
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxp-VBhRuF4erToH21c9BK2x_VxV8KtE_zeTu-EmTeay_NEnvH5gupuvr5NzTHsWuqPuA/exec'; 
 // -------------------
 
 
