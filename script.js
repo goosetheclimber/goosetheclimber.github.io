@@ -1,137 +1,181 @@
-// --- CONFIGURATION ---
-// PASTE YOUR GOOGLE APPS SCRIPT URL HERE
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxp-VBhRuF4erToH21c9BK2x_VxV8KtE_zeTu-EmTeay_NEnvH5gupuvr5NzTHsWuqPuA/exec'; 
-// -------------------
-
-
 document.addEventListener('DOMContentLoaded', () => {
-    const leaderboardBody = document.getElementById('leaderboard-body');
-    const attendBtn = document.getElementById('attendBtn');
-    const achieveBtn = document.getElementById('achieveBtn');
-    const currentUserEl = document.getElementById('currentUser');
-    
-    let loggedInUser = localStorage.getItem('clubUsername');
 
-    function checkLoginStatus() {
-        loggedInUser = localStorage.getItem('clubUsername');
-        if (loggedInUser) {
-            currentUserEl.textContent = `Logged in as: ${loggedInUser}`;
-            attendBtn.disabled = false;
-            achieveBtn.disabled = false;
-        } else {
-            currentUserEl.textContent = 'Not logged in. Log in from the main page to participate.';
-            attendBtn.disabled = true;
-            achieveBtn.disabled = true;
-        }
-    }
+    // --- INTERNATIONALIZATION (i18n) ---
+    let translations = {};
+    const langKoBtn = document.getElementById('lang-ko');
+    const langEnBtn = document.getElementById('lang-en');
 
-    async function fetchLeaderboard() {
-        if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-            leaderboardBody.innerHTML = `<tr><td colspan="4" class="text-center py-10 px-5 text-red-400">Error: Google Apps Script URL is not set in script.js.</td></tr>`;
-            return;
-        }
-        
-        leaderboardBody.innerHTML = `<tr><td colspan="4" class="text-center py-10 px-5 text-gray-400">Fetching latest data...</td></tr>`;
+    // Function to fetch translation files
+    const loadTranslations = async (lang) => {
+        const response = await fetch(`${lang}.json`);
+        translations = await response.json();
+        applyTranslations();
+    };
 
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'GET',
-                redirect: 'follow',
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            
-            // Sort data: higher attendance first, then higher achievements
-            data.sort((a, b) => {
-                if (b.attendance !== a.attendance) {
-                    return b.attendance - a.attendance;
-                }
-                return b.achievements - a.achievements;
-            });
-            
-            renderLeaderboard(data);
-        } catch (error) {
-            console.error('Error fetching leaderboard:', error);
-            leaderboardBody.innerHTML = `<tr><td colspan="4" class="text-center py-10 px-5 text-red-400">Could not load leaderboard data. Please check the console for errors.</td></tr>`;
-        }
-    }
-
-    function renderLeaderboard(data) {
-        leaderboardBody.innerHTML = ''; // Clear existing data
-        if (data.length === 0) {
-             leaderboardBody.innerHTML = `<tr><td colspan="4" class="text-center py-10 px-5 text-gray-400">Leaderboard is empty. Be the first to participate!</td></tr>`;
-             return;
-        }
-
-        data.forEach((user, index) => {
-            const row = document.createElement('tr');
-            row.className = 'hover:bg-gray-700';
-            row.innerHTML = `
-                <td class="px-5 py-5 border-b border-gray-700 text-sm">
-                    <p class="text-white whitespace-no-wrap">${index + 1}</p>
-                </td>
-                <td class="px-5 py-5 border-b border-gray-700 text-sm">
-                    <p class="text-white whitespace-no-wrap font-semibold">${user.name}</p>
-                </td>
-                <td class="px-5 py-5 border-b border-gray-700 text-sm">
-                    <p class="text-white whitespace-no-wrap">${user.attendance}</p>
-                </td>
-                <td class="px-5 py-5 border-b border-gray-700 text-sm">
-                    <p class="text-white whitespace-no-wrap">${user.achievements}</p>
-                </td>
-            `;
-            leaderboardBody.appendChild(row);
+    // Function to apply translations to the page
+    const applyTranslations = () => {
+        document.querySelectorAll('[data-i18n-key]').forEach(element => {
+            const key = element.getAttribute('data-i18n-key');
+            element.textContent = translations[key] || element.textContent;
         });
+    };
+    
+    // Function to set language and save preference
+    const setLanguage = (lang) => {
+        localStorage.setItem('language', lang);
+        
+        // Update button styles
+        if (lang === 'ko') {
+            langKoBtn.classList.add('bg-gray-900', 'text-white');
+            langKoBtn.classList.remove('text-gray-300', 'hover:bg-gray-700');
+            langEnBtn.classList.add('text-gray-300', 'hover:bg-gray-700');
+            langEnBtn.classList.remove('bg-gray-900', 'text-white');
+        } else {
+            langEnBtn.classList.add('bg-gray-900', 'text-white');
+            langEnBtn.classList.remove('text-gray-300', 'hover:bg-gray-700');
+            langKoBtn.classList.add('text-gray-300', 'hover:bg-gray-700');
+            langKoBtn.classList.remove('bg-gray-900', 'text-white');
+        }
+
+        loadTranslations(lang);
+    };
+
+    // Event listeners for language buttons
+    if (langKoBtn && langEnBtn) {
+        langKoBtn.addEventListener('click', () => setLanguage('ko'));
+        langEnBtn.addEventListener('click', () => setLanguage('en'));
     }
 
-    async function postData(action, points = 0) {
-        if (!loggedInUser) {
-            alert('You must be logged in to perform this action.');
-            return;
-        }
-        
-        attendBtn.disabled = true;
-        achieveBtn.disabled = true;
-        
-        const payload = {
-            name: loggedInUser,
-            action: action,
-            points: points
+    // On page load, check for saved language or default to 'ko'
+    const savedLang = localStorage.getItem('language') || 'ko';
+    setLanguage(savedLang);
+
+
+    // --- LEADERBOARD LOGIC (only on leaderboard page) ---
+    const leaderboardBody = document.getElementById('leaderboard-body');
+    if (leaderboardBody) {
+        const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; 
+
+        const loginSection = document.getElementById('login-section');
+        const welcomeSection = document.getElementById('welcome-section');
+        const usernameDisplay = document.getElementById('username-display');
+        const setUsernameBtn = document.getElementById('set-username');
+        const usernameInput = document.getElementById('username-input');
+        const attendButton = document.getElementById('attend-button');
+        const achieveButton = document.getElementById('achieve-button');
+
+        let currentUser = localStorage.getItem('clubUsername');
+
+        const setupUser = () => {
+            if (currentUser) {
+                loginSection.classList.add('hidden');
+                welcomeSection.classList.remove('hidden');
+                usernameDisplay.textContent = currentUser;
+            } else {
+                loginSection.classList.remove('hidden');
+                welcomeSection.classList.add('hidden');
+            }
         };
 
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8', // Required for Apps Script
-                },
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+        const fetchLeaderboard = () => {
+            leaderboardBody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Loading...</td></tr>';
+            fetch(SCRIPT_URL)
+                .then(response => response.json())
+                .then(data => {
+                    // Sort data by achievements (desc), then attendance (desc)
+                    data.sort((a, b) => {
+                        if (b.achievements !== a.achievements) {
+                            return b.achievements - a.achievements;
+                        }
+                        return b.attendance - a.attendance;
+                    });
+
+                    leaderboardBody.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach((row, index) => {
+                            const tr = document.createElement('tr');
+                            tr.className = 'bg-gray-800 border-b border-gray-700 hover:bg-gray-600';
+                            tr.innerHTML = `
+                                <td class="py-4 px-6 font-medium text-white">${index + 1}</td>
+                                <td class="py-4 px-6">${row.name}</td>
+                                <td class="py-4 px-6">${row.attendance}</td>
+                                <td class="py-4 px-6">${row.achievements}</td>
+                                <td class="py-4 px-6">${new Date(row.lastUpdated).toLocaleDateString()}</td>
+                            `;
+                            leaderboardBody.appendChild(tr);
+                        });
+                    } else {
+                        leaderboardBody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No data available.</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching leaderboard:', error);
+                    leaderboardBody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-400">Error loading data.</td></tr>';
+                });
+        };
+        
+        const postData = (action, points = 0) => {
+            if (!currentUser) {
+                alert('Please set your name first!');
+                return;
             }
 
-            // Refresh the leaderboard to show the new data
-            await fetchLeaderboard();
+            const payload = {
+                name: currentUser,
+                action: action,
+                points: points
+            };
+            
+            // Disable buttons to prevent multiple clicks
+            attendButton.disabled = true;
+            achieveButton.disabled = true;
 
-        } catch (error) {
-            console.error(`Error with action '${action}':`, error);
-            alert(`An error occurred. Could not update your data.`);
-        } finally {
-            checkLoginStatus(); // Re-enable buttons if still logged in
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Important for Google Apps Script
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                 setTimeout(() => {
+                    fetchLeaderboard(); // Refresh the leaderboard after a delay
+                    // Re-enable buttons
+                    attendButton.disabled = false;
+                    achieveButton.disabled = false;
+                }, 2000); // Wait 2 seconds for sheet to update
+            })
+            .catch(error => {
+                console.error('Error posting data:', error);
+                // Re-enable buttons
+                attendButton.disabled = false;
+                achieveButton.disabled = false;
+            });
+        };
+
+        if(setUsernameBtn) {
+            setUsernameBtn.addEventListener('click', () => {
+                const username = usernameInput.value.trim();
+                if (username) {
+                    currentUser = username;
+                    localStorage.setItem('clubUsername', currentUser);
+                    setupUser();
+                }
+            });
         }
-    }
+        
+        if(attendButton) {
+            attendButton.addEventListener('click', () => postData('attend'));
+        }
 
-    // Event Listeners
-    attendBtn.addEventListener('click', () => postData('attend'));
-    achieveBtn.addEventListener('click', () => postData('achieve', 10));
-    
-    // Initial Load
-    checkLoginStatus();
-    fetchLeaderboard();
+        if(achieveButton) {
+            achieveButton.addEventListener('click', () => postData('achieve', 10));
+        }
+
+
+        // Initial setup
+        setupUser();
+        fetchLeaderboard();
+    }
 });
