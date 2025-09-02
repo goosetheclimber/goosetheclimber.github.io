@@ -1,0 +1,52 @@
+/* Using a Google Font for better typography */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Add a subtle gradient and texture to the background */
+body.bg-gray-900 {
+    background-color: #111827;
+    background-image: radial-gradient(circle at top right, rgba(12, 74, 110, 0.3), transparent 50%);
+}
+
+/* Style the navigation for a more modern look */
+nav a {
+    transition: all 0.2s ease-in-out;
+}
+
+nav a:hover {
+    transform: translateY(-2px);
+}
+
+nav a.bg-gray-900 {
+    position: relative;
+}
+
+/* Add an underline effect to the active nav link */
+nav a.bg-gray-900::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 1rem;
+    right: 1rem;
+    height: 2px;
+    background-color: #4f46e5; /* Indigo */
+    border-radius: 2px;
+}
+
+/* Style action buttons on the leaderboard for better visual feedback */
+#attendBtn, #achieveBtn {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+
+#attendBtn:hover, #achieveBtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+}
+
+#attendBtn:disabled, #achieveBtn:disabled {
+    transform: none;
+    box-shadow: none;
+    background-color: #4b5563;
+}
