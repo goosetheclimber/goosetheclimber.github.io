@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LEADERBOARD LOGIC (only on leaderboard page) ---
     const leaderboardBody = document.getElementById('leaderboard-body');
     if (leaderboardBody) {
-        const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; 
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxp-VBhRuF4erToH21c9BK2x_VxV8KtE_zeTu-EmTeay_NEnvH5gupuvr5NzTHsWuqPuA/exec'; 
 
         const loginSection = document.getElementById('login-section');
         const welcomeSection = document.getElementById('welcome-section');
